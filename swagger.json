@@ -1,0 +1,59 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Project 2 API",
+        "version": "1.0.0",
+        "description": "API for managing users"
+    },
+    "host": "localhost:3000",
+    "schemes": ["http"],
+    "paths": {
+        "/users": {
+            "get": {
+                "summary": "Retrieve all users",
+                "responses": { "200": { "description": "List of users" } }
+            },
+            "post": {
+                "summary": "Create a new user",
+                "parameters": [
+                    { "in": "body", "name": "user", "required": true, "schema": { "$ref": "#/definitions/User" } }
+                ],
+                "responses": { "201": { "description": "User created successfully" } }
+            }
+        },
+        "/users/{id}": {
+            "put": {
+                "summary": "Update a user",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "type": "string" },
+                    { "in": "body", "name": "user", "required": true, "schema": { "$ref": "#/definitions/User" } }
+                ],
+                "responses": {
+                    "200": { "description": "User updated successfully" },
+                    "404": { "description": "User not found" },
+                    "400": { "description": "Invalid input" }
+                }
+            },
+            "delete": {
+                "summary": "Delete a user",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "type": "string" }
+                ],
+                "responses": {
+                    "200": { "description": "User deleted successfully" },
+                    "404": { "description": "User not found" }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "User": {
+            "type": "object",
+            "properties": {
+                "name": { "type": "string" },
+                "email": { "type": "string" },
+                "password": { "type": "string" }
+            }
+        }
+    }
+}
