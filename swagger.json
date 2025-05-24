@@ -5,7 +5,7 @@
         "version": "1.0.0",
         "description": "API for managing users"
     },
-    "host": "https://cse-341-project2-qauj.onrender.com",
+    "host": "cse-341-project2-qauj.onrender.com",
     "schemes": ["https"],
     "paths": {
         "/users": {
