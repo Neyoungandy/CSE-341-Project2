@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/neyoungandy/CSE-341-Project2#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express-validator": "^7.2.1",
     "mongoose": "^8.15.0",
