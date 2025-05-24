@@ -5,8 +5,8 @@
         "version": "1.0.0",
         "description": "API for managing users"
     },
-    "host": "localhost:3000",
-    "schemes": ["http"],
+    "host": "https://cse-341-project2-qauj.onrender.com",
+    "schemes": ["https"],
     "paths": {
         "/users": {
             "get": {
