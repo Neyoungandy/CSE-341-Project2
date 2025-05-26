@@ -24,6 +24,10 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 const userRoutes = require("./routes/userRoutes");
 app.use("/users", userRoutes);
 
+const postRoutes = require("./routes/postRoutes");
+app.use("/posts", postRoutes); // New collection registered
+
+
 // Basic Route to Confirm Server is Running
 app.get("/", (req, res) => {
     res.send("Welcome to Project 2 API!");

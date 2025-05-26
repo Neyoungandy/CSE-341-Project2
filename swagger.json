@@ -3,7 +3,7 @@
     "info": {
         "title": "Project 2 API",
         "version": "1.0.0",
-        "description": "API for managing users"
+        "description": "API for managing users and posts"
     },
     "host": "cse-341-project2-qauj.onrender.com",
     "schemes": ["https"],
@@ -44,6 +44,43 @@
                     "404": { "description": "User not found" }
                 }
             }
+        },
+        "/posts": {
+            "get": {
+                "summary": "Retrieve all posts",
+                "responses": { "200": { "description": "List of posts" } }
+            },
+            "post": {
+                "summary": "Create a new post",
+                "parameters": [
+                    { "in": "body", "name": "post", "required": true, "schema": { "$ref": "#/definitions/Post" } }
+                ],
+                "responses": { "201": { "description": "Post created successfully" } }
+            }
+        },
+        "/posts/{id}": {
+            "put": {
+                "summary": "Update a post",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "type": "string" },
+                    { "in": "body", "name": "post", "required": true, "schema": { "$ref": "#/definitions/Post" } }
+                ],
+                "responses": {
+                    "200": { "description": "Post updated successfully" },
+                    "404": { "description": "Post not found" },
+                    "400": { "description": "Invalid input" }
+                }
+            },
+            "delete": {
+                "summary": "Delete a post",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "type": "string" }
+                ],
+                "responses": {
+                    "200": { "description": "Post deleted successfully" },
+                    "404": { "description": "Post not found" }
+                }
+            }
         }
     },
     "definitions": {
@@ -53,6 +90,14 @@
                 "name": { "type": "string" },
                 "email": { "type": "string" },
                 "password": { "type": "string" }
+            }
+        },
+        "Post": {
+            "type": "object",
+            "properties": {
+                "title": { "type": "string" },
+                "content": { "type": "string" },
+                "author": { "type": "string" }
             }
         }
     }
