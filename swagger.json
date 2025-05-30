@@ -20,6 +20,27 @@
         }
     ],
     "paths": {
+        "/auth/register": {
+            "post": {
+                "summary": "Register a new user (Traditional Login)",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "user",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": { "description": "User registered successfully" },
+                    "400": { "description": "Invalid input or missing fields" },
+                    "409": { "description": "User already exists" },
+                    "500": { "description": "Server error" }
+                }
+            }
+        },
         "/auth/github": {
             "get": {
                 "summary": "Initiate GitHub OAuth login",

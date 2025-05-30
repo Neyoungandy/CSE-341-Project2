@@ -4,6 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors"); // Middleware to handle CORS
 const passport = require("passport"); // OAuth with GitHub
+const session = require("express-session"); // Added session middleware
 const swaggerUi = require("swagger-ui-express"); // API documentation
 const swaggerDocument = require("./swagger.json"); // Import Swagger Docs
 
@@ -15,13 +16,22 @@ const app = express();
 app.use(express.json()); // Parse JSON data
 app.use(cors()); // Allow external API requests
 
+//  Configure session (Added before Passport initialization)
+app.use(session({
+    secret: process.env.JWT_SECRET || "fallbacksecret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false } // Set to `true` in production with HTTPS
+}));
+
+// Initialize Passport for GitHub OAuth (After session setup)
+app.use(passport.initialize());
+app.use(passport.session()); // Enables session support for login
+
 //  Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("✅ MongoDB Connected"))
     .catch((err) => console.error("❌ MongoDB Connection Error:", err));
-
-// Initialize Passport for GitHub OAuth
-app.use(passport.initialize());
 
 // API Documentation Route
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
