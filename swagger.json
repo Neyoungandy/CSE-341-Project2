@@ -3,15 +3,48 @@
     "info": {
         "title": "Project 2 API",
         "version": "1.0.0",
-        "description": "API for managing users and posts"
+        "description": "API for managing users and posts with authentication"
     },
     "host": "cse-341-project2-qauj.onrender.com",
     "schemes": ["https"],
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    },
+    "security": [
+        {
+            "BearerAuth": []
+        }
+    ],
     "paths": {
+        "/auth/github": {
+            "get": {
+                "summary": "Initiate GitHub OAuth login",
+                "responses": {
+                    "302": { "description": "Redirect to GitHub for authentication" }
+                }
+            }
+        },
+        "/auth/github/callback": {
+            "get": {
+                "summary": "GitHub OAuth callback",
+                "responses": {
+                    "200": { "description": "User authenticated successfully" },
+                    "400": { "description": "Authentication failed" }
+                }
+            }
+        },
         "/users": {
             "get": {
                 "summary": "Retrieve all users",
-                "responses": { "200": { "description": "List of users" } }
+                "security": [{ "BearerAuth": [] }],
+                "responses": {
+                    "200": { "description": "List of users" },
+                    "401": { "description": "Unauthorized access" }
+                }
             },
             "post": {
                 "summary": "Create a new user",
@@ -24,23 +57,27 @@
         "/users/{id}": {
             "put": {
                 "summary": "Update a user",
+                "security": [{ "BearerAuth": [] }],
                 "parameters": [
                     { "name": "id", "in": "path", "required": true, "type": "string" },
                     { "in": "body", "name": "user", "required": true, "schema": { "$ref": "#/definitions/User" } }
                 ],
                 "responses": {
                     "200": { "description": "User updated successfully" },
+                    "401": { "description": "Unauthorized access" },
                     "404": { "description": "User not found" },
                     "400": { "description": "Invalid input" }
                 }
             },
             "delete": {
                 "summary": "Delete a user",
+                "security": [{ "BearerAuth": [] }],
                 "parameters": [
                     { "name": "id", "in": "path", "required": true, "type": "string" }
                 ],
                 "responses": {
                     "200": { "description": "User deleted successfully" },
+                    "401": { "description": "Unauthorized access" },
                     "404": { "description": "User not found" }
                 }
             }
@@ -48,10 +85,15 @@
         "/posts": {
             "get": {
                 "summary": "Retrieve all posts",
-                "responses": { "200": { "description": "List of posts" } }
+                "security": [{ "BearerAuth": [] }],
+                "responses": {
+                    "200": { "description": "List of posts" },
+                    "401": { "description": "Unauthorized access" }
+                }
             },
             "post": {
                 "summary": "Create a new post",
+                "security": [{ "BearerAuth": [] }],
                 "parameters": [
                     { "in": "body", "name": "post", "required": true, "schema": { "$ref": "#/definitions/Post" } }
                 ],
@@ -61,23 +103,27 @@
         "/posts/{id}": {
             "put": {
                 "summary": "Update a post",
+                "security": [{ "BearerAuth": [] }],
                 "parameters": [
                     { "name": "id", "in": "path", "required": true, "type": "string" },
                     { "in": "body", "name": "post", "required": true, "schema": { "$ref": "#/definitions/Post" } }
                 ],
                 "responses": {
                     "200": { "description": "Post updated successfully" },
+                    "401": { "description": "Unauthorized access" },
                     "404": { "description": "Post not found" },
                     "400": { "description": "Invalid input" }
                 }
             },
             "delete": {
                 "summary": "Delete a post",
+                "security": [{ "BearerAuth": [] }],
                 "parameters": [
                     { "name": "id", "in": "path", "required": true, "type": "string" }
                 ],
                 "responses": {
                     "200": { "description": "Post deleted successfully" },
+                    "401": { "description": "Unauthorized access" },
                     "404": { "description": "Post not found" }
                 }
             }

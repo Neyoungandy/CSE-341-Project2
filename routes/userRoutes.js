@@ -1,11 +1,12 @@
 const express = require("express");
 const { body, param, validationResult } = require("express-validator");
 const { getUsers, createUser, updateUser, deleteUser } = require("../controllers/userController");
+const authenticateJWT = require("../middleware/authMiddleware"); // Import authentication middleware
 
 const router = express.Router();
 
-//  GET: Retrieve all users
-router.get("/", getUsers);
+//  GET: Retrieve all users (Protected)
+router.get("/", authenticateJWT, getUsers);
 
 //  POST: Create new user with validation
 router.post(
@@ -25,9 +26,10 @@ router.post(
     createUser
 );
 
-//  PUT: Update user with validation
+//  PUT: Update user with validation (Protected)
 router.put(
     "/:id",
+    authenticateJWT, // Require authentication before updating a user
     [
         param("id").isMongoId().withMessage("Invalid User ID"),
         body("name").optional().isString().trim().isLength({ min: 3 }).withMessage("Name must be at least 3 characters"),
@@ -44,9 +46,10 @@ router.put(
     updateUser
 );
 
-//  DELETE: Validate User ID before deleting
+//  DELETE: Validate User ID before deleting (Protected)
 router.delete(
     "/:id",
+    authenticateJWT, // Require authentication before deleting a user
     [
         param("id").isMongoId().withMessage("Invalid User ID"),
     ],
