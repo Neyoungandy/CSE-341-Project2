@@ -14,9 +14,15 @@ const app = express();
 
 //  Middleware Setup
 app.use(express.json()); // Parse JSON data
-app.use(cors()); // Allow external API requests
 
-//  Configure session (Added before Passport initialization)
+// ✅ Improved CORS Setup (Removed Duplicate)
+app.use(cors({
+    origin: "*",  // Allow all origins (for testing)
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Authorization", "Content-Type"]
+}));
+
+//  Configure session (Before Passport initialization)
 app.use(session({
     secret: process.env.JWT_SECRET || "fallbacksecret",
     resave: false,
@@ -37,7 +43,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //  Import & Use Routes
-const authRoutes = require("./routes/authRoutes"); //  Authentication routes added
+const authRoutes = require("./routes/authRoutes"); // Authentication routes added
 app.use("/auth", authRoutes);
 
 const userRoutes = require("./routes/userRoutes");
