@@ -7,40 +7,7 @@
     },
     "host": "cse-341-project2-qauj.onrender.com",
     "schemes": ["https"],
-    "securityDefinitions": {
-        "BearerAuth": {
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
-        }
-    },
-    "security": [
-        {
-            "BearerAuth": []
-        }
-    ],
     "paths": {
-        "/auth/register": {
-            "post": {
-                "summary": "Register a new user (Traditional Login)",
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "user",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/User"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": { "description": "User registered successfully" },
-                    "400": { "description": "Invalid input or missing fields" },
-                    "409": { "description": "User already exists" },
-                    "500": { "description": "Server error" }
-                }
-            }
-        },
         "/auth/github": {
             "get": {
                 "summary": "Initiate GitHub OAuth login",
@@ -53,18 +20,26 @@
             "get": {
                 "summary": "GitHub OAuth callback",
                 "responses": {
-                    "200": { "description": "User authenticated successfully" },
+                    "200": { "description": "User authenticated successfully, session created" },
                     "400": { "description": "Authentication failed" }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "summary": "Log out user and destroy session",
+                "responses": {
+                    "200": { "description": "User logged out successfully" }
                 }
             }
         },
         "/users": {
             "get": {
                 "summary": "Retrieve all users",
-                "security": [{ "BearerAuth": [] }],
+                "description": "This endpoint requires users to be logged in via GitHub OAuth.",
                 "responses": {
                     "200": { "description": "List of users" },
-                    "401": { "description": "Unauthorized access" }
+                    "401": { "description": "Unauthorized access, login required" }
                 }
             },
             "post": {
@@ -78,27 +53,27 @@
         "/users/{id}": {
             "put": {
                 "summary": "Update a user",
-                "security": [{ "BearerAuth": [] }],
+                "description": "Requires users to be logged in via GitHub OAuth.",
                 "parameters": [
                     { "name": "id", "in": "path", "required": true, "type": "string" },
                     { "in": "body", "name": "user", "required": true, "schema": { "$ref": "#/definitions/User" } }
                 ],
                 "responses": {
                     "200": { "description": "User updated successfully" },
-                    "401": { "description": "Unauthorized access" },
+                    "401": { "description": "Unauthorized, login required" },
                     "404": { "description": "User not found" },
                     "400": { "description": "Invalid input" }
                 }
             },
             "delete": {
                 "summary": "Delete a user",
-                "security": [{ "BearerAuth": [] }],
+                "description": "Requires users to be logged in via GitHub OAuth.",
                 "parameters": [
                     { "name": "id", "in": "path", "required": true, "type": "string" }
                 ],
                 "responses": {
                     "200": { "description": "User deleted successfully" },
-                    "401": { "description": "Unauthorized access" },
+                    "401": { "description": "Unauthorized, login required" },
                     "404": { "description": "User not found" }
                 }
             }
@@ -106,15 +81,15 @@
         "/posts": {
             "get": {
                 "summary": "Retrieve all posts",
-                "security": [{ "BearerAuth": [] }],
+                "description": "This endpoint requires users to be logged in via GitHub OAuth.",
                 "responses": {
                     "200": { "description": "List of posts" },
-                    "401": { "description": "Unauthorized access" }
+                    "401": { "description": "Unauthorized access, login required" }
                 }
             },
             "post": {
                 "summary": "Create a new post",
-                "security": [{ "BearerAuth": [] }],
+                "description": "Requires users to be logged in via GitHub OAuth.",
                 "parameters": [
                     { "in": "body", "name": "post", "required": true, "schema": { "$ref": "#/definitions/Post" } }
                 ],
@@ -124,27 +99,27 @@
         "/posts/{id}": {
             "put": {
                 "summary": "Update a post",
-                "security": [{ "BearerAuth": [] }],
+                "description": "Requires users to be logged in via GitHub OAuth.",
                 "parameters": [
                     { "name": "id", "in": "path", "required": true, "type": "string" },
                     { "in": "body", "name": "post", "required": true, "schema": { "$ref": "#/definitions/Post" } }
                 ],
                 "responses": {
                     "200": { "description": "Post updated successfully" },
-                    "401": { "description": "Unauthorized access" },
+                    "401": { "description": "Unauthorized access, login required" },
                     "404": { "description": "Post not found" },
                     "400": { "description": "Invalid input" }
                 }
             },
             "delete": {
                 "summary": "Delete a post",
-                "security": [{ "BearerAuth": [] }],
+                "description": "Requires users to be logged in via GitHub OAuth.",
                 "parameters": [
                     { "name": "id", "in": "path", "required": true, "type": "string" }
                 ],
                 "responses": {
                     "200": { "description": "Post deleted successfully" },
-                    "401": { "description": "Unauthorized access" },
+                    "401": { "description": "Unauthorized access, login required" },
                     "404": { "description": "Post not found" }
                 }
             }
@@ -155,8 +130,7 @@
             "type": "object",
             "properties": {
                 "name": { "type": "string" },
-                "email": { "type": "string" },
-                "password": { "type": "string" }
+                "email": { "type": "string" }
             }
         },
         "Post": {

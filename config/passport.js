@@ -7,8 +7,7 @@ passport.use(
         {
             clientID: process.env.GITHUB_CLIENT_ID,
             clientSecret: process.env.GITHUB_CLIENT_SECRET,
-            callbackURL: "http://localhost:3000/auth/github/callback" // For local testing
-
+            callbackURL: process.env.Callback_URL || "http://localhost:3000/auth/github/callback" // Uses .env for flexibility
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
@@ -29,11 +28,18 @@ passport.use(
     )
 );
 
+// Updated: Use session-based authentication
 passport.serializeUser((user, done) => {
-    done(null, user.id);
+    done(null, user.githubId); // Store GitHub ID instead of JWT
 });
 
-passport.deserializeUser(async (id, done) => {
-    const user = await User.findById(id);
-    done(null, user);
+passport.deserializeUser(async (githubId, done) => {
+    try {
+        const user = await User.findOne({ githubId });
+        done(null, user);
+    } catch (err) {
+        done(err, null);
+    }
 });
+
+module.exports = passport;
