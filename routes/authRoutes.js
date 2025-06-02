@@ -7,7 +7,7 @@ require("../config/passport");
 const router = express.Router();
 
 // GitHub OAuth Login
-router.get("/github", passport.authenticate("github", { scope: ["user:email"] }));
+router.get("auth/github", passport.authenticate("github", { scope: ["user:email"] }));
 
 // GitHub OAuth Callback (Session-Based Authentication)
 router.get(
