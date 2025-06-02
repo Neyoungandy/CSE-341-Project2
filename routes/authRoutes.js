@@ -7,26 +7,26 @@ require("../config/passport");
 const router = express.Router();
 
 // GitHub OAuth Login
-router.get("auth/github", passport.authenticate("github", { scope: ["user:email"] }));
+router.get("/github", passport.authenticate("github", { scope: ["user:email"] }));
 
 // GitHub OAuth Callback (Session-Based Authentication)
 router.get(
     "/github/callback",
     passport.authenticate("github", { failureRedirect: "/" }),
     (req, res) => {
-        res.send("Login successful! You are now authenticated.");
-
+        req.session.user = req.user; // Store user in session
+        res.json({ message: "Login successful! You are now authenticated.", user: req.user });
     }
 );
 
 // Logout (Clears Session)
 router.get("/logout", (req, res) => {
-    req.logout(() => {
-        req.session.destroy(() => {
-            res.json({ message: "Logged out successfully" });
-        });
+    req.logout();
+    req.session.destroy(() => {
+        res.json({ message: "Logged out successfully" });
     });
 });
+
 
 // Middleware to Protect Routes
 const ensureAuthenticated = (req, res, next) => {
