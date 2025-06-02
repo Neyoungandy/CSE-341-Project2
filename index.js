@@ -15,19 +15,25 @@ const app = express();
 //  Middleware Setup
 app.use(express.json()); // Parse JSON data
 
-// ✅ Improved CORS Setup (Removed Duplicate)
+// Improved CORS Setup
 app.use(cors({
-    origin: "*",  // Allow all origins (for testing)
+    origin: ["http://localhost:3000", "https://cse-341-project2-qauj.onrender.com"], // Allow local & deployed versions
     methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Authorization", "Content-Type"]
+    allowedHeaders: ["Authorization", "Content-Type"],
+    credentials: true  // Allow sending cookies for authentication
 }));
+
 
 //  Configure session (Before Passport initialization)
 app.use(session({
-    secret: process.env.JWT_SECRET || "fallbacksecret",
+    secret: process.env.SESSION_SECRET || "fallbacksecret",
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false } // Set to `true` in production with HTTPS
+    cookie: {
+        secure: process.env.NODE_ENV === "production", // Ensures `secure: true` only in production
+        httpOnly: true,
+        sameSite: "lax" // Allows authentication persistence
+    }
 }));
 
 // Initialize Passport for GitHub OAuth (After session setup)
@@ -40,7 +46,14 @@ mongoose.connect(process.env.MONGO_URI)
     .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
 // API Documentation Route
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/api-docs", (req, res, next) => {
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader("Access-Control-Allow-Origin", req.headers.origin || "*"); // Dynamically allow origins
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+    res.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
+    next();
+}, swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 
 //  Import & Use Routes
 const authRoutes = require("./routes/authRoutes"); // Authentication routes added

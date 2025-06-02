@@ -5,8 +5,19 @@
         "version": "1.0.0",
         "description": "API for managing users and posts with authentication"
     },
-    "host": "cse-341-project2-qauj.onrender.com",
-    "schemes": ["https"],
+
+"host": "cse-341-project2-qauj.onrender.com",
+    "schemes": ["https", "http"],
+    "securityDefinitions": {
+        "SessionAuth": {
+            "type": "apiKey",
+            "name": "Cookie",
+            "in": "header",
+            "description": "Session-based authentication via GitHub OAuth"
+        }
+    },
+    "security": [{ "SessionAuth": [] }],
+
     "paths": {
         "/auth/github": {
             "get": {
