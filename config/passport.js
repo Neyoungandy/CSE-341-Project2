@@ -34,6 +34,7 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((user, done) => {
+    console.log("Deserializing user:", user);
     done(null, user); // Retrieve the full user object
 });
 

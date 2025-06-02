@@ -43,9 +43,12 @@ app.use(session({
 // Debugging Session Data for Authentication Issues
 app.use((req, res, next) => {
     console.log("Session Data:", req.session);
+    console.log("Session Passport Data:", req.session.passport);
+    console.log("User Data:", req.user);
     console.log("Authenticated:", req.isAuthenticated ? req.isAuthenticated() : "Function missing");
     next();
 });
+
 
 // Initialize Passport for GitHub OAuth
 app.use(passport.initialize());
