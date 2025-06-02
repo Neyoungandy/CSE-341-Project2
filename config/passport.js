@@ -30,13 +30,14 @@ passport.use(
 
 // Updated: Use session-based authentication
 passport.serializeUser((user, done) => {
-    done(null, user); // Store the full user object
+    done(null, user); // Store full user object
 });
 
-passport.deserializeUser((user, done) => {
-    console.log("Deserializing user:", user);
-    done(null, user); // Retrieve the full user object
+passport.deserializeUser(async (user, done) => {
+    console.log("Deserializing user:", user); // 🔥 Debugging step
+    done(null, user);
 });
+
 
 
 module.exports = passport;

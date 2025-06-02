@@ -28,18 +28,20 @@ app.use(cors({
 //  Configure session (Before Passport initialization)
 app.use(session({
     secret: process.env.SESSION_SECRET || "fallbacksecret",
-    resave: false,
-    saveUninitialized: false,
+    resave: true, // 🔥 Change to `true` to force session persistence
+    saveUninitialized: true, // 🔥 Ensures new sessions are stored
     store: MongoStore.create({
         mongoUrl: process.env.MONGO_URI,
         collectionName: "sessions"
     }),
     cookie: {
-        secure: process.env.NODE_ENV === "production",
+        secure: true,  // 🔥 Ensures session cookies work under HTTPS
         httpOnly: true,
-        sameSite: "none" // Allows authentication persistence across Render
+        sameSite: "none", // 🔥 Critical for authentication persistence across Render!
+        maxAge: 24 * 60 * 60 * 1000 // 🔥 Keeps session active for 24 hours
     }
 }));
+
 
 
 // Initialize Passport for GitHub OAuth (After session setup)
