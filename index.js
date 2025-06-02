@@ -1,5 +1,6 @@
 require("dotenv").config(); // Load environment variables
 
+const MongoStore = require("connect-mongo");
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors"); // Middleware to handle CORS
@@ -29,17 +30,30 @@ app.use(session({
     secret: process.env.SESSION_SECRET || "fallbacksecret",
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGO_URI,
+        collectionName: "sessions"
+    }),
     cookie: {
-        secure: process.env.NODE_ENV === "production", // Ensures `secure: true` only in production
+        secure: process.env.NODE_ENV === "production",
         httpOnly: true,
-        sameSite: "lax" // Allows authentication persistence
+        sameSite: "none" // Allows authentication persistence across Render
     }
 }));
+
 
 // Initialize Passport for GitHub OAuth (After session setup)
 app.use(passport.initialize());
 app.use(passport.session()); // Enables session support for login
 
+// Add debugging middleware here (before routes)
+app.use((req, res, next) => {
+    console.log("Session Data:", req.session);
+    console.log("Session Passport Data:", req.session.passport);
+    console.log("User Data:", req.user);
+    console.log("Authenticated:", req.isAuthenticated ? req.isAuthenticated() : "Function missing");
+    next();
+});
 //  Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("✅ MongoDB Connected"))
