@@ -6,18 +6,11 @@
         "description": "API for managing users and posts with authentication"
     },
     "host": "localhost:3000",
-    "schemes":
-    [
-    "http",
-    "https"
-  ],
-"servers": [
-  {
-    "url": "http://localhost:3000"
-  }
-],
-
-
+    "schemes": ["http", "https"],
+    "servers": [
+        { "url": "http://localhost:3000" },
+        { "url": "https://cse-341-project2-qauj.onrender.com" }
+    ],
     "securityDefinitions": {
         "SessionAuth": {
             "type": "apiKey",
@@ -78,7 +71,7 @@
                 "description": "Requires authentication via GitHub OAuth.",
                 "security": [{ "SessionAuth": [] }],
                 "parameters": [
-                    { "name": "id", "in": "path", "required": true, "type": "string", "format": "uuid" },
+                    { "name": "id", "in": "path", "required": true, "type": "string", "example": "6839ab0436f5c7fafbeba678" },
                     { "in": "body", "name": "user", "required": true, "schema": { "$ref": "#/definitions/User" } }
                 ],
                 "responses": {
@@ -93,7 +86,7 @@
                 "description": "Requires authentication via GitHub OAuth.",
                 "security": [{ "SessionAuth": [] }],
                 "parameters": [
-                    { "name": "id", "in": "path", "required": true, "type": "string", "format": "uuid" }
+                    { "name": "id", "in": "path", "required": true, "type": "string", "example": "6839ab0436f5c7fafbeba678" }
                 ],
                 "responses": {
                     "200": { "description": "User deleted successfully" },
@@ -126,7 +119,7 @@
                 "summary": "Update a post",
                 "security": [{ "SessionAuth": [] }],
                 "parameters": [
-                    { "name": "id", "in": "path", "required": true, "type": "string", "format": "uuid" },
+                    { "name": "id", "in": "path", "required": true, "type": "string", "example": "6839ab0436f5c7fafbeba678" },
                     { "in": "body", "name": "post", "required": true, "schema": { "$ref": "#/definitions/Post" } }
                 ],
                 "responses": {
@@ -140,11 +133,11 @@
                 "summary": "Delete a post",
                 "security": [{ "SessionAuth": [] }],
                 "parameters": [
-                    { "name": "id", "in": "path", "required": true, "type": "string", "format": "uuid" }
+                    { "name": "id", "in": "path", "required": true, "type": "string", "example": "6839ab0436f5c7fafbeba678" }
                 ],
                 "responses": {
                     "200": { "description": "Post deleted successfully" },
-                    "401": { "description": "Unauthorized access, login required" },
+                    "401": { "description": "Unauthorized, login required" },
                     "404": { "description": "Post not found" }
                 }
             }
