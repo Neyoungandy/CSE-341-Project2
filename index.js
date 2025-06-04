@@ -104,7 +104,7 @@ app.get("/dashboard", (req, res) => {
     
     if (isLoggedIn) {
         res.json({
-            message: "🎉 Overridden Dashboard Access Granted!",
+            message: "Overridden Dashboard Access Granted!",
             user: req.user
         });
     } else {

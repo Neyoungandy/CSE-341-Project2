@@ -6,7 +6,7 @@
         "description": "API for managing users and posts with authentication"
     },
     "host": "localhost:3000",
-    "schemes": ["http,https"],
+    "schemes": ["http"],
 "servers": [
   {
     "url": "http://localhost:3000"
