@@ -18,17 +18,20 @@ const app = express();
 app.use(express.json()); // Parse JSON data
 
 // ✅ Improved CORS Setup
+const isProduction = process.env.NODE_ENV === 'production';
+const allowedOrigin = isProduction
+  ? 'https://cse-341-project2-qauj.onrender.com'
+  : 'http://localhost:3000';
+
 app
   .use(express.json())
   .use(
     cors({
-      origin:
-        appConfig.env === 'production'
-          ? 'https://cse-341-project2-qauj.onrender.com'
-          : 'http://localhost:3000',
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-}));
+      origin: allowedOrigin,
+      credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    })
+  );
 
 // ✅ Configure session (Before Passport initialization)
 app.use(session({
