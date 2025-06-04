@@ -14,47 +14,40 @@ require("./config/passport"); // Load Passport configuration
 
 const app = express();
 
-// ✅ Middleware Setup
+// Middleware Setup
 app.use(express.json()); // Parse JSON data
 
-// ✅ Improved CORS Setup
-const isProduction = process.env.NODE_ENV === 'production';
-const allowedOrigin = isProduction
-  ? 'https://cse-341-project2-qauj.onrender.com'
-  : 'http://localhost:3000';
-
-app
-  .use(express.json())
-  .use(
-    cors({
-     origin: process.env.NODE_ENV === "production" ? "https://cse-341-project2-qauj.onrender.com" : "http://localhost:3000",
-    credentials: true, // ✅ Ensures cookies persist across requests
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+// Improved CORS Setup
+app.use(cors({
+    origin: process.env.NODE_ENV === 'production' ? 'https://cse-341-project2-qauj.onrender.com' : 'http://localhost:3000',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 }));
 
-// ✅ Configure session (Before Passport initialization)
+// Configure session (Before Passport initialization)
 app.use(session({
     secret: process.env.SESSION_SECRET || "fallbacksecret",
-    resave: false, // ✅ Prevents unnecessary session overwrites
-    saveUninitialized: false, // ✅ Ensures session is only stored after authentication
+    resave: false, //  Prevents unnecessary session overwrites
+    saveUninitialized: false, // Ensures session is only stored after authentication
     store: MongoStore.create({
         mongoUrl: process.env.MONGO_URI,
         collectionName: "sessions"
     }),
     cookie: {
-        secure: process.env.NODE_ENV === "production", // ✅ Must be true for Render HTTPS
+        secure: process.env.NODE_ENV === "production", // Set `false` locally, `true` for Render
         httpOnly: true,
-        sameSite: "lax", // ✅ Change from "none" to "lax" for better session retention
+        sameSite: "lax", // ✅ Fix session persistence issue
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
 }));
+
 
 app.use(passport.initialize());
 app.use(passport.session());
 
 
 
-// ✅ Debug Route to Check Session Persistence
+// Debug Route to Check Session Persistence
 app.get("/session-debug", (req, res) => {
     res.json({
         session: req.session,
@@ -64,12 +57,12 @@ app.get("/session-debug", (req, res) => {
     });
 });
 
-// ✅ Corrected MongoDB Connection Setup
+// Corrected MongoDB Connection Setup
 mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 5000 })
     .then(() => console.log("✅ MongoDB Connected"))
     .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
-// ✅ API Documentation Route
+// API Documentation Route
 app.use("/api-docs", (req, res, next) => {
     res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader("Access-Control-Allow-Origin", req.headers.origin || "*");
@@ -88,7 +81,7 @@ app.get("/auth-debug", (req, res) => {
     });
 });
 
-// ✅ Debugging middleware (before routes)
+// Debugging middleware (before routes)
 app.use((req, res, next) => {
     console.log("🔥 Middleware Debugging - Incoming Request:", req.method, req.url);
     console.log("🔥 Session Data:", req.session);
@@ -98,24 +91,23 @@ app.use((req, res, next) => {
     next();
 });
 
-// ✅ Temporary `/dashboard` Route to Handle Login Redirection
+// Temporary `/dashboard` Route to Handle Login Redirection
 app.get("/dashboard", (req, res) => {
     console.log("🔥 Checking Authentication for Dashboard");
     console.log("🔥 Session Data:", req.session);
     console.log("🔥 Passport Session Data:", req.session.passport);
     console.log("🔥 User Data:", req.user);
     
-    // ✅ Ensures session authentication is retrieved correctly
+    // ✅ Check both Passport authentication and session persistence
     if (req.user || (req.session && req.session.passport && req.session.passport.user)) {
         res.json({
             message: "Welcome to your dashboard!",
-            user: req.user || req.session.user
+            user: req.user
         });
     } else {
         res.status(401).json({ error: "Unauthorized. Please log in via GitHub." });
     }
 });
-
 
 
 //  Import & Use Routes

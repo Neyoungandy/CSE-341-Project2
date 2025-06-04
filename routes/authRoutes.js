@@ -6,10 +6,10 @@ require("../config/passport");
 
 const router = express.Router();
 
-// ✅ Initiate GitHub Authentication
+// Initiate GitHub Authentication
 router.get("/github", passport.authenticate("github", { scope: ["user:email"] }));
 
-// ✅ Handle GitHub OAuth Callback
+// Handle GitHub OAuth Callback
 router.get("/github/callback",
     passport.authenticate("github", { failureRedirect: "/" }),
     async (req, res) => {
@@ -20,12 +20,12 @@ router.get("/github/callback",
         }
 
         try {
-            // ✅ Attach authenticated user to session
+            // Attach authenticated user to session
             req.session.user = req.user;
             await req.session.save(); // 🔥 Ensure session is stored
 
             console.log("🔥 Session Saved Successfully:", req.session);
-            res.redirect("/dashboard"); // ✅ Redirect after successful authentication
+            res.redirect("/dashboard"); // Redirect after successful authentication
         } catch (error) {
             console.error("❌ Error Saving Session:", error);
             res.status(500).json({ error: "Session storage failed. Please try again." });
@@ -33,7 +33,7 @@ router.get("/github/callback",
     }
 );
 
-// ✅ Logout User
+// Logout User
 router.get("/logout", (req, res) => {
     req.logout(err => {
         if (err) {
