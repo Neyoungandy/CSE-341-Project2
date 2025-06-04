@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: function () { return !this.githubId; } }, // Required only for non-OAuth users
     role: { type: String, enum: ["user", "admin"], default: "user" },
+    bio: { type: String, maxlength: 500, default: "" },
     createdAt: { type: Date, default: Date.now }
 });
 
