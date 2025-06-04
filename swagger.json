@@ -6,7 +6,7 @@
         "description": "API for managing users and posts with authentication"
     },
     "host": "localhost:3000",
-    "schemes": ["https", "http"],
+    "schemes": ["http"],
 
     "securityDefinitions": {
         "SessionAuth": {

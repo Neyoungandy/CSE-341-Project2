@@ -1,6 +1,6 @@
 const Post = require("../models/post");
 
-// ✅ GET: Retrieve all posts
+// GET: Retrieve all posts
 const getPosts = async (req, res) => {
     try {
         const posts = await Post.find().populate("author", "name email");
@@ -10,7 +10,7 @@ const getPosts = async (req, res) => {
     }
 };
 
-// ✅ POST: Create a new post
+// POST: Create a new post
 const createPost = async (req, res) => {
     try {
         const { title, content, author } = req.body;
@@ -25,7 +25,7 @@ const createPost = async (req, res) => {
     }
 };
 
-// ✅ PUT: Update a post by ID
+// PUT: Update a post by ID
 const updatePost = async (req, res) => {
     try {
         const { title, content } = req.body;
@@ -39,7 +39,7 @@ const updatePost = async (req, res) => {
     }
 };
 
-// ✅ DELETE: Remove a post by ID
+// DELETE: Remove a post by ID
 const deletePost = async (req, res) => {
     try {
         const post = await Post.findByIdAndDelete(req.params.id);
