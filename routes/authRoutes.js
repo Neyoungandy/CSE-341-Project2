@@ -13,7 +13,7 @@ router.get("/github", passport.authenticate("github", { scope: ["user:email"] })
 router.get("/github/callback",
     passport.authenticate("github", { failureRedirect: "/" }),
     async (req, res) => {
-        console.log("🔥 OAuth Callback - User Authenticated:", req.user);
+        console.log(" OAuth Callback - User Authenticated:", req.user);
 
         if (!req.user) {
             return res.status(401).json({ error: "Authentication failed. Please try again." });
@@ -22,9 +22,9 @@ router.get("/github/callback",
         try {
             // Attach authenticated user to session
             req.session.user = req.user;
-            await req.session.save(); // 🔥 Ensure session is stored
+            await req.session.save(); // Ensure session is stored
 
-            console.log("🔥 Session Saved Successfully:", req.session);
+            console.log(" Session Saved Successfully:", req.session);
             res.redirect("/dashboard"); // Redirect after successful authentication
         } catch (error) {
             console.error("❌ Error Saving Session:", error);
@@ -42,7 +42,7 @@ router.get("/logout", (req, res) => {
         }
 
         req.session.destroy(() => {
-            console.log("🔥 Session Destroyed - User Logged Out");
+            console.log(" Session Destroyed - User Logged Out");
             res.redirect("/");
         });
     });

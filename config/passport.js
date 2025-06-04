@@ -11,7 +11,7 @@ passport.use(
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
-                console.log("🔥 GitHub Profile Received:", profile);
+                console.log(" GitHub Profile Received:", profile);
                 
                 let user = await User.findOne({ githubId: profile.id });
 
@@ -23,9 +23,9 @@ passport.use(
                     });
 
                     await user.save();
-                    console.log("✅ New User Created:", user);
+                    console.log(" New User Created:", user);
                 } else {
-                    console.log("✅ Existing User Found:", user);
+                    console.log(" Existing User Found:", user);
                 }
 
                 return done(null, user);
@@ -37,13 +37,13 @@ passport.use(
     )
 );
 
-// ✅ Serialize User into Session
+//  Serialize User into Session
 passport.serializeUser((user, done) => {
     console.log("🔥 Serializing User:", user);
-    done(null, user._id); // ✅ Store user ID for session tracking
+    done(null, user._id); // Store user ID for session tracking
 });
 
-// ✅ Deserialize User from Session
+//  Deserialize User from Session
 passport.deserializeUser(async (id, done) => {
     try {
         const user = await User.findById(id);

@@ -1,18 +1,18 @@
 const ensureAuthenticated = (req, res, next) => {
-    console.log("🔥 Debugging Authentication Middleware");
-    console.log("🔥 Session Data:", req.session);
-    console.log("🔥 Passport Session:", req.session.passport);
-    console.log("🔥 User Data:", req.user);
+    console.log(" Debugging Authentication Middleware");
+    console.log(" Session Data:", req.session);
+    console.log(" Passport Session:", req.session.passport);
+    console.log(" User Data:", req.user);
 
     // Standard Passport Authentication Check
     if (req.isAuthenticated && req.isAuthenticated()) {
-        console.log("✅ User is authenticated via Passport");
+        console.log(" User is authenticated via Passport");
         return next();
     }
 
     // Secondary Check: Ensure `req.user` exists in session
     if (req.user) { 
-        console.log("✅ User exists in session, authentication valid");
+        console.log(" User exists in session, authentication valid");
         return next();
     }
 
