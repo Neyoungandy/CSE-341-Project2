@@ -18,8 +18,14 @@ const app = express();
 app.use(express.json()); // Parse JSON data
 
 // ✅ Improved CORS Setup
-app.use(cors({
-    origin: process.env.NODE_ENV === 'production' ? 'https://cse-341-project2-qauj.onrender.com' : 'http://localhost:3000',
+app
+  .use(express.json())
+  .use(
+    cors({
+      origin:
+        appConfig.env === 'production'
+          ? 'https://cse-341-project2-qauj.onrender.com'
+          : 'http://localhost:3000',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 }));
