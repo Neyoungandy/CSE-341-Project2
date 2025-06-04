@@ -27,11 +27,10 @@ app
   .use(express.json())
   .use(
     cors({
-      origin: allowedOrigin,
-      credentials: true,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    })
-  );
+     origin: process.env.NODE_ENV === "production" ? "https://cse-341-project2-qauj.onrender.com" : "http://localhost:3000",
+    credentials: true, // ✅ Ensures cookies persist across requests
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+}));
 
 // ✅ Configure session (Before Passport initialization)
 app.use(session({
@@ -43,16 +42,15 @@ app.use(session({
         collectionName: "sessions"
     }),
     cookie: {
-        secure: true, // ✅ Ensure secure cookies on Render
+        secure: process.env.NODE_ENV === "production", // ✅ Must be true for Render HTTPS
         httpOnly: true,
-        sameSite: "none", // ✅ Allows cookies to persist across domains
+        sameSite: "lax", // ✅ Change from "none" to "lax" for better session retention
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
 }));
 
 app.use(passport.initialize());
 app.use(passport.session());
-
 
 
 
