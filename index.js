@@ -43,15 +43,16 @@ app.use(session({
         collectionName: "sessions"
     }),
     cookie: {
-        secure: process.env.NODE_ENV === "production",
+        secure: true, // ✅ Ensure secure cookies on Render
         httpOnly: true,
-        sameSite: "lax", // ✅ Change to "lax" for better session retention
-        maxAge: 24 * 60 * 60 * 1000
+        sameSite: "none", // ✅ Allows cookies to persist across domains
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
 }));
 
 app.use(passport.initialize());
 app.use(passport.session());
+
 
 
 
