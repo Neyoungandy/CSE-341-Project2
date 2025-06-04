@@ -1,5 +1,6 @@
 require("dotenv").config(); // Load environment variables
 
+const GitHubStrategy = require("passport-github2").Strategy;
 const MongoStore = require("connect-mongo");
 const express = require("express");
 const mongoose = require("mongoose");
@@ -13,66 +14,104 @@ require("./config/passport"); // Load Passport configuration
 
 const app = express();
 
-//  Middleware Setup
+// ✅ Middleware Setup
 app.use(express.json()); // Parse JSON data
 
-// Improved CORS Setup
+// ✅ Improved CORS Setup
 app.use(cors({
-    origin: ["http://localhost:3000", "https://cse-341-project2-qauj.onrender.com"], // Allow local & deployed versions
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Authorization", "Content-Type"],
-    credentials: true  // Allow sending cookies for authentication
+    origin: process.env.NODE_ENV === 'production' ? 'https://cse-341-project2-qauj.onrender.com' : 'http://localhost:3000',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 }));
 
-
-//  Configure session (Before Passport initialization)
+// ✅ Configure session (Before Passport initialization)
 app.use(session({
     secret: process.env.SESSION_SECRET || "fallbacksecret",
-    resave: true, // 🔥 Change to `true` to force session persistence
-    saveUninitialized: true, // 🔥 Ensures new sessions are stored
+    resave: false, // ✅ Prevents unnecessary session overwrites
+    saveUninitialized: false, // ✅ Ensures session is only stored after authentication
     store: MongoStore.create({
         mongoUrl: process.env.MONGO_URI,
         collectionName: "sessions"
     }),
     cookie: {
-        secure: true,  // 🔥 Ensures session cookies work under HTTPS
+        secure: process.env.NODE_ENV === "production",
         httpOnly: true,
-        sameSite: "none", // 🔥 Critical for authentication persistence across Render!
-        maxAge: 24 * 60 * 60 * 1000 // 🔥 Keeps session active for 24 hours
+        sameSite: "lax", // ✅ Change to "lax" for better session retention
+        maxAge: 24 * 60 * 60 * 1000
     }
 }));
 
-
-
-// Initialize Passport for GitHub OAuth (After session setup)
 app.use(passport.initialize());
-app.use(passport.session()); // Enables session support for login
+app.use(passport.session());
 
-// Add debugging middleware here (before routes)
-app.use((req, res, next) => {
-    console.log("Session Data:", req.session);
-    console.log("Session Passport Data:", req.session.passport);
-    console.log("User Data:", req.user);
-    console.log("Authenticated:", req.isAuthenticated ? req.isAuthenticated() : "Function missing");
-    next();
+
+
+// ✅ Debug Route to Check Session Persistence
+app.get("/session-debug", (req, res) => {
+    res.json({
+        session: req.session,
+        passportData: req.session.passport,
+        user: req.user,
+        authenticated: req.isAuthenticated ? req.isAuthenticated() : "Function missing"
+    });
 });
-//  Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
+
+// ✅ Corrected MongoDB Connection Setup
+mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 5000 })
     .then(() => console.log("✅ MongoDB Connected"))
     .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
-// API Documentation Route
+// ✅ API Documentation Route
 app.use("/api-docs", (req, res, next) => {
     res.setHeader("Access-Control-Allow-Credentials", "true");
-    res.setHeader("Access-Control-Allow-Origin", req.headers.origin || "*"); // Dynamically allow origins
+    res.setHeader("Access-Control-Allow-Origin", req.headers.origin || "*");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
     res.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
     next();
 }, swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+app.get("/auth-debug", (req, res) => {
+    res.json({
+        message: "Auth Debug Info",
+        session: req.session,
+        passportData: req.session.passport,
+        user: req.user,
+        authenticated: req.isAuthenticated ? req.isAuthenticated() : "Function missing"
+    });
+});
+
+// ✅ Debugging middleware (before routes)
+app.use((req, res, next) => {
+    console.log("🔥 Middleware Debugging - Incoming Request:", req.method, req.url);
+    console.log("🔥 Session Data:", req.session);
+    console.log("🔥 Passport Session Data:", req.session.passport);
+    console.log("🔥 User Data:", req.user);
+    console.log("🔥 Authenticated:", req.isAuthenticated ? req.isAuthenticated() : "Function missing");
+    next();
+});
+
+// ✅ Temporary `/dashboard` Route to Handle Login Redirection
+app.get("/dashboard", (req, res) => {
+    console.log("🔥 Checking Authentication for Dashboard");
+    console.log("🔥 Session Data:", req.session);
+    console.log("🔥 Passport Session Data:", req.session.passport);
+    console.log("🔥 User Data:", req.user);
+    
+    // ✅ Ensures session authentication is retrieved correctly
+    if (req.user || (req.session && req.session.passport && req.session.passport.user)) {
+        res.json({
+            message: "Welcome to your dashboard!",
+            user: req.user || req.session.user
+        });
+    } else {
+        res.status(401).json({ error: "Unauthorized. Please log in via GitHub." });
+    }
+});
+
+
 
 //  Import & Use Routes
-const authRoutes = require("./routes/authRoutes"); // Authentication routes added
+const authRoutes = require("./routes/authRoutes");
 app.use("/auth", authRoutes);
 
 const userRoutes = require("./routes/userRoutes");

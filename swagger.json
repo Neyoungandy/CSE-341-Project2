@@ -5,9 +5,9 @@
         "version": "1.0.0",
         "description": "API for managing users and posts with authentication"
     },
-
-"host": "cse-341-project2-qauj.onrender.com",
+    "host": "localhost:3000",
     "schemes": ["https", "http"],
+
     "securityDefinitions": {
         "SessionAuth": {
             "type": "apiKey",
@@ -47,7 +47,8 @@
         "/users": {
             "get": {
                 "summary": "Retrieve all users",
-                "description": "This endpoint requires users to be logged in via GitHub OAuth.",
+                "description": "Requires authentication via GitHub OAuth.",
+                "security": [{ "SessionAuth": [] }],
                 "responses": {
                     "200": { "description": "List of users" },
                     "401": { "description": "Unauthorized access, login required" }
@@ -64,9 +65,10 @@
         "/users/{id}": {
             "put": {
                 "summary": "Update a user",
-                "description": "Requires users to be logged in via GitHub OAuth.",
+                "description": "Requires authentication via GitHub OAuth.",
+                "security": [{ "SessionAuth": [] }],
                 "parameters": [
-                    { "name": "id", "in": "path", "required": true, "type": "string" },
+                    { "name": "id", "in": "path", "required": true, "type": "string", "format": "uuid" },
                     { "in": "body", "name": "user", "required": true, "schema": { "$ref": "#/definitions/User" } }
                 ],
                 "responses": {
@@ -78,9 +80,10 @@
             },
             "delete": {
                 "summary": "Delete a user",
-                "description": "Requires users to be logged in via GitHub OAuth.",
+                "description": "Requires authentication via GitHub OAuth.",
+                "security": [{ "SessionAuth": [] }],
                 "parameters": [
-                    { "name": "id", "in": "path", "required": true, "type": "string" }
+                    { "name": "id", "in": "path", "required": true, "type": "string", "format": "uuid" }
                 ],
                 "responses": {
                     "200": { "description": "User deleted successfully" },
@@ -92,7 +95,8 @@
         "/posts": {
             "get": {
                 "summary": "Retrieve all posts",
-                "description": "This endpoint requires users to be logged in via GitHub OAuth.",
+                "description": "Requires authentication via GitHub OAuth.",
+                "security": [{ "SessionAuth": [] }],
                 "responses": {
                     "200": { "description": "List of posts" },
                     "401": { "description": "Unauthorized access, login required" }
@@ -100,7 +104,7 @@
             },
             "post": {
                 "summary": "Create a new post",
-                "description": "Requires users to be logged in via GitHub OAuth.",
+                "security": [{ "SessionAuth": [] }],
                 "parameters": [
                     { "in": "body", "name": "post", "required": true, "schema": { "$ref": "#/definitions/Post" } }
                 ],
@@ -110,9 +114,9 @@
         "/posts/{id}": {
             "put": {
                 "summary": "Update a post",
-                "description": "Requires users to be logged in via GitHub OAuth.",
+                "security": [{ "SessionAuth": [] }],
                 "parameters": [
-                    { "name": "id", "in": "path", "required": true, "type": "string" },
+                    { "name": "id", "in": "path", "required": true, "type": "string", "format": "uuid" },
                     { "in": "body", "name": "post", "required": true, "schema": { "$ref": "#/definitions/Post" } }
                 ],
                 "responses": {
@@ -124,9 +128,9 @@
             },
             "delete": {
                 "summary": "Delete a post",
-                "description": "Requires users to be logged in via GitHub OAuth.",
+                "security": [{ "SessionAuth": [] }],
                 "parameters": [
-                    { "name": "id", "in": "path", "required": true, "type": "string" }
+                    { "name": "id", "in": "path", "required": true, "type": "string", "format": "uuid" }
                 ],
                 "responses": {
                     "200": { "description": "Post deleted successfully" },

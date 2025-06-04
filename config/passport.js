@@ -7,37 +7,58 @@ passport.use(
         {
             clientID: process.env.GITHUB_CLIENT_ID,
             clientSecret: process.env.GITHUB_CLIENT_SECRET,
-            callbackURL: process.env.Callback_URL || "https://cse-341-project2-qauj.onrender.com/auth/github/callback" // Uses .env for flexibility
+            callbackURL: process.env.GITHUB_CALLBACK_URL
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
+                console.log("🔥 GitHub Profile Received:", profile);
+                
                 let user = await User.findOne({ githubId: profile.id });
+
                 if (!user) {
                     user = new User({
                         githubId: profile.id,
                         name: profile.displayName || "GitHub User",
-                        email: profile.emails?.[0]?.value || "No public email",
+                        email: profile.emails?.[0]?.value || "No public email"
                     });
+
                     await user.save();
+                    console.log("✅ New User Created:", user);
+                } else {
+                    console.log("✅ Existing User Found:", user);
                 }
+
                 return done(null, user);
             } catch (err) {
+                console.error("❌ Error in GitHub Authentication:", err);
                 return done(err, null);
             }
         }
     )
 );
 
-// Updated: Use session-based authentication
+// ✅ Serialize User into Session
 passport.serializeUser((user, done) => {
-    done(null, user); // Store full user object
+    console.log("🔥 Serializing User:", user);
+    done(null, user._id); // ✅ Store user ID for session tracking
 });
 
-passport.deserializeUser(async (user, done) => {
-    console.log("Deserializing user:", user); // 🔥 Debugging step
-    done(null, user);
+// ✅ Deserialize User from Session
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await User.findById(id);
+
+        if (!user) {
+            console.error("❌ User not found during deserialization");
+            return done(null, false);
+        }
+
+        console.log("🔥 Deserializing User:", user);
+        done(null, user);
+    } catch (error) {
+        console.error("❌ Error in Deserialization:", error);
+        done(error, null);
+    }
 });
-
-
 
 module.exports = passport;
